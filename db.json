@@ -1,0 +1,20 @@
+{
+  "records": {
+    "classes": {
+      "buttona": {
+        "generation_count": 0,
+        "generations": [
+          {"id": 0, "color":"blue"}
+        ],
+        "preference": {
+          "color": {
+            "blue": {
+              "interactions": 1,
+              "views": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
