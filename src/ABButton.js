@@ -6,10 +6,11 @@ class ABButton extends Component {
 
   constructor(props) {
     super(props)
+    var core =  new ABCore()
     this.state = {
-      core: new ABCore(),
+      core: core,
       id: "foo",
-      color: "red"
+      color: core.generateColor()
     };
     this.handleClick = this.handleClick.bind(this);
     var config = {
@@ -24,12 +25,12 @@ class ABButton extends Component {
   }
 
   handleClick() {
-    this.state.core.log(`records/classes/${this.state.id}/preference/color/${this.state.color}`, {interactions: 1, views: 1})
+    this.state.core.log(`records/classes/${this.state.id}/preference/color/${this.state.color}`)
   }
 
   render() {
     return (
-      <button onClick={this.handleClick}>Foo Bar</button>
+      <button style = {{backgroundColor: this.state.color}} onClick={this.handleClick}>Foo Bar</button>
     );
   }
 }
