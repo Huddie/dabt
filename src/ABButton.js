@@ -6,10 +6,11 @@ class ABButton extends Component {
 
   constructor(props) {
     super(props)
+    this.generateStyle = this.generateStyle.bind(this);
     var core =  new ABCore()
     this.state = {
       core: core,
-      id: "foo",
+      id: this.props.id,
       color: core.generateColor()
     };
     this.handleClick = this.handleClick.bind(this);
@@ -24,13 +25,34 @@ class ABButton extends Component {
     firebase.initializeApp(config);
   }
 
+  componentDidMount() {
+    this.setState({style: this.generateStyle()})
+  }
+
   handleClick() {
-    this.state.core.log(`records/classes/${this.state.id}/preference/color/${this.state.color}`)
+    var data = eval(this.state.style)
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) { 
+        this.state.core.logInteraction(
+          `records/classes/${this.state.id}/preferences/${key}/${data[key]}`
+        )   
+      }
+    }
+  }
+
+  /// Generate a random styling for the 
+  /// the button for a given generation
+  generateStyle() {
+    return {backgroundColor: this.state.color}
   }
 
   render() {
+    /// Log the view
+    this.state.core.logView(
+      `records/classes/${this.state.id}/preferences/backgroundColor/${this.state.color}`
+    )
     return (
-      <button style = {{backgroundColor: this.state.color}} onClick={this.handleClick}>Foo Bar</button>
+      <button style = {this.state.style} onClick={this.handleClick}>Foo Bar</button>
     );
   }
 }

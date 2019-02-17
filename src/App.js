@@ -4,8 +4,8 @@ import ABButton from './ABButton';
 
 class App extends Component {
   render() {
-    return (
-      <ABButton>Hello World</ABButton>
+    return(
+      <ABButton id="foo">Hello World</ABButton>
     );
   }
 }
