@@ -1,66 +1,66 @@
 import { normalize } from "path";
-import React, { Component } from 'react';
-
 var firebase = require("firebase"); 
-class ABCore extends Component{
+const styles = {
+    backgroundColors : [
+        'yellow',
+        'red',
+        'green',
+        'blue',
+        'black',
+        'purple',
+        'orange'
+    ],
 
-    constructor(props){
-        super(props)
+    fontSizes : [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60
+    ],
+
+    borderRadiuss : [
+        3,
+        6,
+        9,
+        12,
+        15,
+        18
+    ]
+}
+class ABCore {
+
+    constructor() {
         this.getStyleID = this.getStyleID.bind(this);
-        var styles = {
-            backgroundColors : [
-                'yellow',
-                'red',
-                'green',
-                'blue',
-                'black',
-                'purple',
-                'orange'
-            ],
-
-            fontSizes : [
-                10,
-                20,
-                30,
-                40,
-                50,
-                60
-            ],
-
-            borderRadiuss : [
-                3,
-                6,
-                9,
-                12,
-                15,
-                18
-            ]
-        }
-
-        this.state = {
-            s : styles
-        }
     }
-    
 
-
-
-    getStyleID = (id) => {
-        firebase.database().ref('records').once('value').then(function(snapshot){
+     getStyleID(id, callback) {
+        firebase.database().ref('records').once('value').then(async function(snapshot){
             //if database is empty populate it with all options
-            console.log(this.state)
             if(snapshot.val() == undefined || snapshot.val() == null){
-                for(var color in this.state.s['backgroundColors']){
-                    firebase.database().ref(`records/classes/${id}/preferences/backgroundColor/${color}`).set({interactions: 0, views: 1});
+                console.log(styles)
+                var bkc = styles['backgroundColors']
+                for(var c in bkc){
+                    var color = bkc[c]
+                    await firebase.database().ref(`records/classes/${id}/preferences/backgroundColor/${color}`).set({interactions: 0, views: 1});
                 }
-                for(var size in this.state.s['fontSizes']){
-                    firebase.database().ref(`records/classes/${id}/preferences/fontSize/${size}`).set({interactions: 0, views: 1});
+                var fnz = styles['fontSizes']
+                for(var s in fnz){
+                    var size = fnz[s]
+                    await firebase.database().ref(`records/classes/${id}/preferences/fontSize/${size}`).set({interactions: 0, views: 1});
                 }
-                for(var radius in this.state.s['borderRadiuss']){
-                    firebase.database().ref(`records/classes/${id}/preferences/borderRadius/${radius}`).set({interactions: 0, views: 1});
+                var brr = styles['borderRadiuss']
+                for(var r in brr){
+                    var radius = brr[r]
+                    await firebase.database().ref(`records/classes/${id}/preferences/borderRadius/${radius}`).set({interactions: 0, views: 1});
                 }
+                callback({
+                    color : 'black',
+                    size : 10,
+                    radius : 10
+                })
             }
-
             else{
                 //choose a color
                 var color_total = 0;
@@ -73,7 +73,7 @@ class ABCore extends Component{
                 var size_probabilities = {};
                 var radius_probabilities = {};
 
-                firebase.database.ref(`records/classes/${id}/preferences`).once('value').then(function(snapshot){
+                firebase.database().ref(`records/classes/${id}/preferences`).once('value').then(function(snapshot){
                     var backgroundColors = snapshot.val()['backgroundColor']
                     for(var color in backgroundColors){
                         color_probabilities[color] = Math.pow( (backgroundColors[color]['interactions'] + 1.0)  / (backgroundColors[color]['views'] + 1.0) , 2 )
@@ -114,7 +114,8 @@ class ABCore extends Component{
                             remaining_probability -= color_probabilities[color];
                         }
                     }
-                    if(selected_color == undefined){
+
+                    if(selected_color === undefined){
                         selected_color = backgroundColors[0];
                     }
 
@@ -128,7 +129,7 @@ class ABCore extends Component{
                             remaining_probability -= size_probabilities[size];
                         }
                     }
-                    if(selected_size == undefined){
+                    if(selected_size === undefined){
                         selected_size = fontSizes[0];
                     }
 
@@ -142,16 +143,16 @@ class ABCore extends Component{
                             remaining_probability -= radius_probabilities[radius];
                         }
                     }
-                    if(selected_radius == undefined){
+                    if(selected_radius === undefined){
                         selected_radius = borderRadiuss[0];
                     }
+                    callback({
+                        color : selected_color,
+                        size : parseInt(selected_size),
+                        radius : parseInt(selected_radius)
+                    })
 
                 });
-            }
-            return {
-                color : selected_color,
-                size : selected_size,
-                radius : selected_radius
             }
         });
         

@@ -21,22 +21,20 @@ class ABButton extends Component {
     this.loginteraction = this.loginteraction.bind(this);
 
     var core =  new ABCore()
-    var styleGuide = core.getStyleID(this.props.id)
-    console.log(styleGuide)
-    this.state = {
-      core: core,
-      id: this.props.id,
-      backgroundColor: styleGuide.color,
-      textColor: 'white',
-      cornerRadius: styleGuide.radius,
-      fontSize: styleGuide.size
-
-    };
-
-  }
-
-  componentDidMount() {
-    this.setState({style: this.generateStyle()})
+    this.state = {style: {}}
+    var that = this
+    core.getStyleID(this.props.id, function(styleGuide) {
+      console.log("STYLE: ", styleGuide)
+      that.setState({
+        core: core,
+        id: that.props.id,
+        backgroundColor: styleGuide.color,
+        textColor: 'white',
+        cornerRadius: styleGuide.radius,
+        fontSize: styleGuide.size
+      });
+      that.setState({style: that.generateStyle()})
+    })
   }
 
   handleClick() {
@@ -81,7 +79,7 @@ class ABButton extends Component {
     /// Log the view
     this.logview()
     return (
-      <button style = {this.state.style} onClick={this.handleClick}>Foo Bar</button>
+      <button style = {this.state.style} onClick={this.handleClick}>{this.props.children}</button>
     );
   }
 }
